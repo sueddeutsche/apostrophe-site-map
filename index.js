@@ -30,6 +30,26 @@ function Construct(options, callback) {
       // General public, not admin
       req.user.permissions = {};
       var excludeTypes = self.excludeTypes = options.excludeTypes || [];
+      var dateTime = moment();
+      var date = dateTime.format('YYYY-MM-DD');
+      var time = dateTime.format('HH:mm:ss');
+      criteria.$or = [
+        {
+          publicationDate: { $lt: `${date}` }, 
+          published: true
+        },
+        {
+          publicationDate: { $eq:`${date}` },
+          publicationTime: { $lte: `${time}` },
+          published: true
+        },
+        {
+          publicationDate: null,
+          publicationTime: null,
+          published: true
+        }
+      ];
+      criteria.slug = { $ne: '/search' };
 
       self.output = output;
 
